@@ -93,14 +93,14 @@ background_questions = [
         "options": ["Windows", "macOS", "Linux", "Android", "iOS"]
     },
     {
-        "text": 'Which country are you located in?',
+        "text": 'Where are you located?',
         "type": "single",
         "options": ["Europe", "USA", "Asia", "Other"]
     },
     {
         "text": "Would you prefer free or paid privacy tools?",
         "type": "single",
-        "options": ["Free", "Paid"]
+        "options": ["Free", "Paid(under 20€)"]
     },
     {
         "text": "Where do you want to improve your privacy?",
@@ -3784,6 +3784,62 @@ pet_data = [
         "pet_company": "NextDNS Inc.",
         "pet_link": "https://nextdns.io",
         "why_use": "Use NextDNS when you want to filter and monitor DNS traffic at a very granular level: block malware, phishing, trackers, ads — *and* choose how long logs are kept, or disable them entirely. It also supports encrypted DNS, protecting your DNS queries from eavesdroppers.",
+        "popularity": 4
+    },
+    {
+        "selected_concern": "Data Sharing with Third Parties",
+        "awareness_level": "Moderate",
+        "device": "Mobile",
+        "os": "Android",
+        "country": "Global",
+        "pet_name": "Built-in OS Privacy Controls",
+        "pet_price": "Free",
+        "pet_description": "Lockdown Privacy blocks third-party trackers, advertising networks, and data-collection domains at the network level. It acts as a local firewall to prevent apps from sharing data externally without the user’s knowledge.",
+        "pet_company": "Lockdown Privacy",
+        "pet_link": "https://support.apple.com/en-us/HT202074",
+        "why_use":  "Recommended for users who want an easy, automatic way to block hidden trackers and third-party connections without needing technical configurations.",
+        "popularity": 4
+    },
+    {
+        "selected_concern": "Data Sharing with Third Parties",
+        "awareness_level": "Moderate",
+        "device": "Mobile",
+        "os": "iOS",
+        "country": "Global",
+        "pet_name": "Built-in OS Privacy Controls",
+        "pet_price": "Free",
+        "pet_description": "Lockdown Privacy blocks third-party trackers, advertising networks, and data-collection domains at the network level. It acts as a local firewall to prevent apps from sharing data externally without the user’s knowledge.",
+        "pet_company": "Lockdown Privacy",
+        "pet_link": "https://support.apple.com/en-us/HT202074",
+        "why_use":  "Recommended for users who want an easy, automatic way to block hidden trackers and third-party connections without needing technical configurations.",
+        "popularity": 4
+    },
+    {
+        "selected_concern": "Data Sharing with Third Parties",
+        "awareness_level": "High",
+        "device": "Mobile",
+        "os": "Android",
+        "country": "Global",
+        "pet_name": "Guardian firewall",
+        "pet_price": "9.99$/month",
+        "pet_description": "Guardian Firewall is a privacy app that combines a smart firewall with a VPN. It filters out trackers (location, mail, data) using its firewall, while sending all internet traffic through an encrypted VPN tunnel to mask your IP and identity.",
+        "pet_company": "Guardian Team",
+        "pet_link": "https://guardianapp.com",
+        "why_use": "Guardian protects your online activity by blocking tracker connections *before* they leave apps or web pages. Its VPN encrypts everything, and your IP is masked with a randomly generated identity without needing to register or provide personal info.It also supports DNS leak protection and can use DNSFilter resolvers for added safety.",
+        "popularity": 4
+    },
+    {
+        "selected_concern": "Data Sharing with Third Parties",
+        "awareness_level": "High",
+        "device": "Mobile",
+        "os": "iOS",
+        "country": "Global",
+        "pet_name": "Guardian firewall",
+        "pet_price": "9.99$/month",
+        "pet_description": "Guardian Firewall is a privacy app that combines a smart firewall with a VPN. It filters out trackers (location, mail, data) using its firewall, while sending all internet traffic through an encrypted VPN tunnel to mask your IP and identity.",
+        "pet_company": "Guardian Team",
+        "pet_link": "https://guardianapp.com",
+        "why_use": "Guardian protects your online activity by blocking tracker connections *before* they leave apps or web pages. Its VPN encrypts everything, and your IP is masked with a randomly generated identity without needing to register or provide personal info.It also supports DNS leak protection and can use DNSFilter resolvers for added safety.",
         "popularity": 4
     }
 

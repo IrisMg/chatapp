@@ -1,9 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QScrollArea
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
+    QFrame, QScrollArea, QSizePolicy
+)
 from PyQt6.QtGui import QFont, QCursor
-from PyQt6.QtCore import pyqtSignal,Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 
 class HeaderWidget(QFrame):
-    dashboard_clicked = pyqtSignal()  
+    dashboard_clicked = pyqtSignal()
 
     def __init__(self, title="Privacy Assistant", parent=None):
         super().__init__(parent)
@@ -15,20 +18,22 @@ class HeaderWidget(QFrame):
             }
             QLabel { color: white; }
         """)
-
         layout = QHBoxLayout()
         self.label = QLabel(title)
         self.label.setFont(QFont("Arial", 20, QFont.Weight.Bold))
-        self.label.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))  # show hand cursor
-        self.label.mousePressEvent = self.on_click  # override click event
+        self.label.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.label.mousePressEvent = self.on_click
         layout.addWidget(self.label)
         layout.addStretch()
         self.setLayout(layout)
 
     def on_click(self, event):
-        self.dashboard_clicked.emit()  # emit signal when clicked
+        self.dashboard_clicked.emit()
+
 
 class DashboardPage(QWidget):
+    start_clicked = pyqtSignal()
+
     def __init__(self, user_name="User", parent=None):
         super().__init__(parent)
         self.user_name = user_name
@@ -37,64 +42,60 @@ class DashboardPage(QWidget):
     def init_ui(self):
         main_layout = QVBoxLayout()
         main_layout.setSpacing(20)
+        main_layout.setContentsMargins(10, 10, 10, 10)
 
-        # --- Header ---
+        # Header
         header = HeaderWidget()
         main_layout.addWidget(header)
-        
 
         # --- Start Section ---
         start_frame = QFrame()
         start_frame.setStyleSheet("""
             QFrame {
-                background-color: #BBDEFB;  /* light blue */
+                background-color: #BBDEFB;
                 border-radius: 10px;
             }
         """)
         start_layout = QVBoxLayout()
         start_layout.setSpacing(20)
-        start_layout.setContentsMargins(50, 50, 50, 50)
+        start_layout.setContentsMargins(30, 30, 30, 30)
 
-        # Title
         start_title = QLabel("Start Your Privacy Assistant")
         start_title.setFont(QFont("Arial", 24, QFont.Weight.Bold))
         start_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Description
         start_desc = QLabel(
-            "Get personalized PETs and product recommendations based on your knowledge level and specific concerns."
+            "Get personalized Privacy Enhancing Tools recommendations based on your knowledge level and specific concerns."
         )
         start_desc.setFont(QFont("Arial", 14))
         start_desc.setWordWrap(True)
         start_desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Estimated time
-        start_time = QLabel("Takes approximately 5-10 minutes.")
+        start_time = QLabel("Takes approximately 5-15 minutes.")
         start_time.setFont(QFont("Arial", 12))
         start_time.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Start button
         self.start_button = QPushButton("Start")
         self.start_button.setFixedWidth(200)
         self.start_button.setStyleSheet("""
             QPushButton {
-                background-color: #1976D2;  /* medium blue */
+                background-color: #1976D2;
                 color: white;
                 border-radius: 10px;
                 padding: 10px;
                 font-size: 16px;
             }
             QPushButton:hover {
-                background-color: #0D47A1;  /* darker blue */
+                background-color: #0D47A1;
             }
         """)
-        # Center the button
+        self.start_button.clicked.connect(self.start_clicked.emit)
+
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.start_button)
         button_layout.addStretch()
 
-        # Add widgets to start layout
         start_layout.addWidget(start_title)
         start_layout.addWidget(start_desc)
         start_layout.addWidget(start_time)
@@ -102,31 +103,26 @@ class DashboardPage(QWidget):
         start_frame.setLayout(start_layout)
         main_layout.addWidget(start_frame)
 
-        # --- Assessment Box ---
+        # --- Assessment Section ---
         assessment_box = QFrame()
-        assessment_box.setFrameShape(QFrame.Shape.StyledPanel)
         assessment_box.setStyleSheet("""
             QFrame {
-                background-color: #E3F2FD;  /* very light blue */
+                background-color: #E3F2FD;
                 border-radius: 10px;
                 padding: 20px;
             }
         """)
-        box_layout = QVBoxLayout()
-        box_layout.setSpacing(20)
+        assessment_layout = QVBoxLayout()
+        assessment_layout.setSpacing(20)
 
-        # Box title with book emoji aligned left
         box_title = QLabel("📖 How the Assessment Works")
         box_title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
         box_title.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        box_title.setContentsMargins(10, 0, 0, 0)
-        box_layout.addWidget(box_title)
+        assessment_layout.addWidget(box_title)
 
-        # Cards inside the box (3 cards)
         cards_layout = QHBoxLayout()
-        cards_layout.setSpacing(20)
+        cards_layout.setSpacing(15)
 
-        # Cards content: (title, description, emoji)
         cards_info = [
             ("Share Background", "Tell us about your privacy background.", "👤"),
             ("Answer Awareness Questions", "Discuss your specific privacy concerns.", "❓"),
@@ -137,17 +133,15 @@ class DashboardPage(QWidget):
             card = self.create_card(title, desc, emoji)
             cards_layout.addWidget(card)
 
-        box_layout.addLayout(cards_layout)
-        assessment_box.setLayout(box_layout)
+        assessment_layout.addLayout(cards_layout)
+        assessment_box.setLayout(assessment_layout)
         main_layout.addWidget(assessment_box)
-        main_layout.addStretch()
 
-        # --- What You'll Learn Box ---
+        # --- What You'll Learn ---
         learn_box = QFrame()
-        learn_box.setFrameShape(QFrame.Shape.StyledPanel)
         learn_box.setStyleSheet("""
             QFrame {
-                background-color: #E3F2FD;  /* very light blue */
+                background-color: #E3F2FD;
                 border-radius: 10px;
                 padding: 20px;
             }
@@ -155,19 +149,15 @@ class DashboardPage(QWidget):
         learn_layout = QVBoxLayout()
         learn_layout.setSpacing(15)
 
-        # Box title with emoji
         learn_title = QLabel("🔒 What You'll Learn")
         learn_title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
         learn_title.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        learn_title.setContentsMargins(10, 0, 0, 0)
         learn_layout.addWidget(learn_title)
 
-        # --- Inner box for bullet points ---
         inner_box = QFrame()
-        inner_box.setFrameShape(QFrame.Shape.StyledPanel)
         inner_box.setStyleSheet("""
             QFrame {
-                background-color: #64B5F6;  
+                background-color: #64B5F6;
                 border-radius: 10px;
                 padding: 15px;
             }
@@ -175,7 +165,6 @@ class DashboardPage(QWidget):
         inner_layout = QVBoxLayout()
         inner_layout.setSpacing(8)
 
-        # Bullet points
         bullet_points = [
             "Browser Fingerprinting",
             "Location Tracking by Apps",
@@ -184,20 +173,19 @@ class DashboardPage(QWidget):
         ]
 
         for point in bullet_points:
-            point_label = QLabel(f"• {point}")
-            point_label.setFont(QFont("Arial", 12))
-            point_label.setStyleSheet("color: white;")  
-            point_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-            inner_layout.addWidget(point_label)
+            lbl = QLabel(f"• {point}")
+            lbl.setFont(QFont("Arial", 12))
+            lbl.setStyleSheet("color: white;")
+            lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            lbl.setWordWrap(True)
+            inner_layout.addWidget(lbl)
 
         inner_box.setLayout(inner_layout)
         learn_layout.addWidget(inner_box)
-
         learn_box.setLayout(learn_layout)
         main_layout.addWidget(learn_box)
 
-
-
+        main_layout.addStretch()
 
         # --- Make Scrollable ---
         container = QWidget()
@@ -206,45 +194,55 @@ class DashboardPage(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setWidget(container)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
-        scroll_layout = QVBoxLayout(self)
-        scroll_layout.addWidget(scroll)
+        final_layout = QVBoxLayout(self)
+        final_layout.addWidget(scroll)
 
     def create_card(self, title, description, emoji):
         frame = QFrame()
-        frame.setFrameShape(QFrame.Shape.StyledPanel)
         frame.setStyleSheet("""
             QFrame {
-                background-color: #64B5F6;  /* medium blue */
+                background-color: #64B5F6;
                 color: white;
                 border-radius: 10px;
                 padding: 15px;
             }
         """)
+        frame.setMinimumWidth(200)
+        frame.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Preferred
+        )
 
         layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        # Emoji as avatar
-        avatar_label = QLabel(emoji)
-        avatar_label.setFont(QFont("Arial", 32))  # big emoji
-        avatar_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        avatar = QLabel(emoji)
+        avatar.setFont(QFont("Arial", 32))
+        avatar.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Title
         title_label = QLabel(title)
         title_label.setFont(QFont("Arial", 12, QFont.Weight.Bold))
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_label.setWordWrap(True)
 
-        # Description
         desc_label = QLabel(description)
         desc_label.setFont(QFont("Arial", 11))
-        desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        desc_label.setWordWrap(True)
 
-        layout.addWidget(avatar_label)
+        layout.addWidget(avatar)
         layout.addSpacing(10)
         layout.addWidget(title_label)
         layout.addWidget(desc_label)
 
         frame.setLayout(layout)
         return frame
+    
+    def wipe_user_data(self):
+        #print("Wiping user data...", self.user_answers)
+        self.user_answers = {}
+        #print("User data wiped.",)
+

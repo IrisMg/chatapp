@@ -1,6 +1,7 @@
 import sqlite3
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QHBoxLayout
 from PyQt6.QtCore import Qt, pyqtSignal
+from dashboard import HeaderWidget
 
 class LearnMorePage(QWidget):
     download_pdf_clicked = pyqtSignal(str)
@@ -11,7 +12,7 @@ class LearnMorePage(QWidget):
     def __init__(self, selected_concern, db_connection: sqlite3.Connection, parent=None):
         super().__init__(parent)
         self.selected_concern = selected_concern
-        print(f"LearnMorePage initialized for concern: {self.selected_concern}")
+        #print(f"LearnMorePage initialized for concern: {self.selected_concern}")
         self.conn = db_connection
         self.init_ui()
 
@@ -23,11 +24,11 @@ class LearnMorePage(QWidget):
             FROM learn_more 
             WHERE specific_concern = ?
         """, (self.selected_concern,))
-        print('selected concern:', self.selected_concern)
+        #print('selected concern:', self.selected_concern)
         
         row = cursor.fetchone()
         if row:
-            print("Learn More data fetched from DB:", row)
+            #print("Learn More data fetched from DB:", row)
             return {
                 "what_is_it": row[0],
                 "why_it_matters": row[1],
@@ -63,6 +64,9 @@ class LearnMorePage(QWidget):
         layout.setSpacing(20)
         layout.setContentsMargins(20, 20, 20, 20)
 
+        # --- Header ---
+        self.header = HeaderWidget()
+        layout.addWidget(self.header)
        
         # Title
         title = QLabel(f"📘 {self.selected_concern} - Learn More")
@@ -105,20 +109,43 @@ class LearnMorePage(QWidget):
         layout.addWidget(scroll)
         
         
-        # Buttons
+        # --- Buttons in horizontal layout ---
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(20)
+
         download_btn = QPushButton("📥 Download PDF")
+        download_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #42A5F5;
+                color: white;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #2196F3;
+            }
+        """)
         download_btn.clicked.connect(lambda: self.download_pdf_clicked.emit(self.selected_concern))
-        layout.addWidget(download_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+        button_layout.addWidget(download_btn)
 
-        back_btn = QPushButton("🏠 Back to Dashboard")
-        back_btn.clicked.connect(self.back_to_dashboard_clicked.emit)
-        layout.addWidget(back_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+        dashboard_btn = QPushButton("🏠 Back to Dashboard")
+        dashboard_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #00BFA5;
+                color: white;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #009E88;
+            }
+        """)
+        dashboard_btn.clicked.connect(self.back_to_dashboard_clicked.emit)
+        button_layout.addWidget(dashboard_btn)
 
-        self.setLayout(layout)
-
-        # --- Back button ---
         back_btn = QPushButton("← Back to Results")
-        back_btn.setFixedWidth(180)
         back_btn.setStyleSheet("""
             QPushButton {
                 background-color: #B0BEC5;
@@ -132,6 +159,15 @@ class LearnMorePage(QWidget):
             }
         """)
         back_btn.clicked.connect(self.go_back.emit)
-        layout.addWidget(back_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+        button_layout.addWidget(back_btn)
+
+        layout.addLayout(button_layout)
 
         self.setLayout(layout)
+    
+    def wipe_user_data(self):
+        self.content = {}
+
+
+        
+

@@ -191,3 +191,10 @@ class ConcernAwarenessQuizPage(QWidget):
             conn.close()
         except sqlite3.Error as e:
             print("Database error:", e)
+    
+    def wipe_user_data(self):
+       # print("Wiping user data from ConcernAwarenessQuizPage", self.user_answers)
+        self.user_answers = {}
+        self.questions = []
+        self.selected_concerns = []
+

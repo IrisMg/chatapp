@@ -8,6 +8,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import smtplib
 from email.message import EmailMessage
+from dashboard import HeaderWidget
 
 
 class DownloadPDFPage(QWidget):
@@ -66,6 +67,10 @@ class DownloadPDFPage(QWidget):
         layout.setSpacing(20)
         layout.setContentsMargins(40, 40, 40, 40)
 
+        # --- Header ---
+        self.header = HeaderWidget()
+        layout.addWidget(self.header)
+
         title = QLabel(f"📥 Download PDF - {self.concern_title}")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet("font-size: 24px; font-weight: bold; color: #0277BD;")
@@ -85,10 +90,24 @@ class DownloadPDFPage(QWidget):
 
         send_btn = QPushButton("📄 Send PDF")
         send_btn.clicked.connect(self.send_pdf)
+        send_btn.setStyleSheet("background-color: #42A5F5; color: white; border-radius: 8px; padding: 10px 20px; font-weight: bold;")
         layout.addWidget(send_btn, alignment=Qt.AlignmentFlag.AlignCenter)
 
         back_btn = QPushButton("🏠 Back to Dashboard")
         back_btn.clicked.connect(self.back_to_dashboard_clicked.emit)
+        back_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #00BFA5;
+                color: white;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #009E88;
+            }
+        """)
+        
         layout.addWidget(back_btn, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(layout)
@@ -207,6 +226,15 @@ class DownloadPDFPage(QWidget):
             smtp.login("privacyassistantapp@gmail.com", "vgilgbjchpujmcir")  
             smtp.send_message(msg)
 
+    def wipe_user_data(self):
+        self.user_background_answers = {}
+        self.quiz_questions = []
+        self.user_quiz_answers = {}
+        self.pet_recommendations = []
+        self.learn_more_content = {}
+        self.concern_title = ""
+
+
     # SEND BUTTON
     def send_pdf(self):
         email = self.email_input.text().strip()
@@ -225,3 +253,13 @@ class DownloadPDFPage(QWidget):
         finally:
             os.remove(pdf_path)
             self.email_input.clear()
+            # DELETE ALL USER DATA 
+            self.wipe_user_data()
+
+
+        
+        
+
+        
+    
+

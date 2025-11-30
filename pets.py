@@ -6,11 +6,13 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QPixmap
 import os
 from download_page import DownloadPDFPage
+from dashboard import HeaderWidget
 
 class PetRecommendationPage(QWidget):
     back_to_dashboard_clicked = pyqtSignal()
     view_pet_clicked = pyqtSignal(str)
     download_pdf_clicked = pyqtSignal()
+    go_back = pyqtSignal()   
 
     def __init__(self, selected_concern, awareness_level, device, os, country, db_connection,
              user_background_answers, quiz_questions, user_quiz_answers, learn_more_content, parent=None):
@@ -93,6 +95,10 @@ class PetRecommendationPage(QWidget):
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(10, 10, 10, 10)
 
+        # Header
+        self.header = HeaderWidget()
+        main_layout.addWidget(self.header)
+
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         container = QWidget()
@@ -129,47 +135,64 @@ class PetRecommendationPage(QWidget):
             for pet in self.other_pets:
                 self.other_pets_container.addWidget(self.create_collapsible_other_pet(pet))
 
-        # Footer buttons
+        # Horizontal buttons row
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(20)
 
-        # Download PDF button
+        # Download PDF
         download_pdf_btn = QPushButton("📄 Download PDF")
         download_pdf_btn.setStyleSheet("""
             QPushButton {
-                background-color: #64B5F6;
+                background-color: #6a0dad;  /* Purple */
+                color: white;
+                border-radius: 5px;
+                padding: 5px 10px;
+            }
+            QPushButton:hover {
+                background-color: #5b0ca1;  /* Darker purple on hover */
+            }
+        """)
+        download_pdf_btn.clicked.connect(lambda: self.download_pdf_clicked.emit())
+        btn_layout.addWidget(download_pdf_btn)
+
+        # Back to Dashboard
+        dashboard_btn = QPushButton("🏠 Back to Dashboard")
+        dashboard_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #00BFA5;
                 color: white;
                 border-radius: 8px;
                 padding: 10px 20px;
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #42A5F5;
+                background-color: #009E88;
             }
         """)
-        download_pdf_btn.clicked.connect(lambda: self.download_pdf_clicked.emit())
+        dashboard_btn.clicked.connect(self.back_to_dashboard_clicked.emit)
+        btn_layout.addWidget(dashboard_btn)
 
-
-        btn_layout.addWidget(download_pdf_btn)
-
-        # Back button
-        back_btn = QPushButton("🏠 Back to Dashboard")
-        back_btn.setStyleSheet("""
+        # Back to Results
+        self.finish_button = QPushButton("← Back to Results")
+        self.finish_button.setStyleSheet(
+            """
             QPushButton {
                 background-color: #B0BEC5;
-                color: white;
-                border-radius: 8px;
-                padding: 8px 20px;
-                font-weight: bold;
+                color: black;
+                border-radius: 6px;
+                padding: 6px;
+                font-size: 14px;
             }
             QPushButton:hover {
                 background-color: #90A4AE;
             }
         """)
-        back_btn.clicked.connect(self.back_to_dashboard_clicked.emit)
-        btn_layout.addWidget(back_btn)
+        self.finish_button.clicked.connect(self.go_back.emit)
+        btn_layout.addWidget(self.finish_button)
 
+        # Add to main vertical layout
         self.layout.addLayout(btn_layout)
+
 
 
 
@@ -237,6 +260,11 @@ class PetRecommendationPage(QWidget):
         else:
             # Expand
             layout.addWidget(self.create_horizontal_pet_card(pet, highlight=False))
+    
+    def wipe_user_data(self):
+        self.recommended_pets = []
+        self.user_background_answers = {}
+
         
     
     

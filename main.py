@@ -11,6 +11,7 @@ from download_page import DownloadPDFPage
 from data.fetch_data import fetch_questions
 import sqlite3
 from pets import PetRecommendationPage
+from PyQt6.QtGui import QFont
 
 DB_PATH = "db/questions.db"
 questions = fetch_questions(DB_PATH, quiz_type="concern")
@@ -60,6 +61,9 @@ class MainWindow(QMainWindow):
         self.results_page = ResultPage(score, total)
 
         # Connect buttons
+        self.results_page.header.dashboard_clicked.connect(
+            lambda: self.stack.setCurrentWidget(self.dashboard)
+        )
         self.results_page.learn_more_clicked.connect(
             lambda concern_title=selected_concern: self.show_learn_more_page(concern_title)
         )
@@ -68,6 +72,11 @@ class MainWindow(QMainWindow):
         self.results_page.back_to_dashboard_clicked.connect(
             lambda: self.stack.setCurrentWidget(self.dashboard)
         )
+        self.results_page.download_pdf_clicked.connect(
+            lambda: self.show_download_pdf_page(
+                concern_title=self.concern_quiz_page.selected_concerns[0]
+            )
+        )
 
         self.stack.addWidget(self.results_page)
         self.stack.setCurrentWidget(self.results_page)
@@ -75,6 +84,9 @@ class MainWindow(QMainWindow):
     def show_learn_more_page(self, selected_concern):
         self.learn_more_page_widget = LearnMorePage(
             selected_concern=selected_concern, db_connection=self.conn
+        )
+        self.learn_more_page_widget.header.dashboard_clicked.connect(
+            lambda: self.stack.setCurrentWidget(self.dashboard)
         )
         self.learn_more_page_widget.download_pdf_clicked.connect(
             lambda title: self.show_download_pdf_page(title)
@@ -109,6 +121,9 @@ class MainWindow(QMainWindow):
             learn_more_content=learn_more_content,
             concern_title=concern_title
         )
+        self.download_pdf_page_widget.header.dashboard_clicked.connect(
+            lambda: self.stack.setCurrentWidget(self.dashboard)
+        )
 
         self.download_pdf_page_widget.back_to_dashboard_clicked.connect(
             lambda: self.stack.setCurrentWidget(self.dashboard)
@@ -120,10 +135,12 @@ class MainWindow(QMainWindow):
     def show_answers_page(self):
         user_answers = self.concern_quiz_page.get_user_answers_dict()
         questions = self.concern_quiz_page.questions
-
         self.show_answers_page_widget = ShowAnswersPage(questions, user_answers)
         self.show_answers_page_widget.go_back.connect(
             lambda: self.stack.setCurrentWidget(self.results_page)
+        )
+        self.show_answers_page_widget.header.dashboard_clicked.connect(
+            lambda: self.stack.setCurrentWidget(self.dashboard)
         )
 
         self.stack.addWidget(self.show_answers_page_widget)
@@ -164,7 +181,12 @@ class MainWindow(QMainWindow):
             user_quiz_answers=self.concern_quiz_page.get_user_answers_dict(),
             learn_more_content=learn_more_content
         )
-
+        self.pet_page.header.dashboard_clicked.connect(
+            lambda: self.stack.setCurrentWidget(self.dashboard)
+        )
+        self.pet_page.go_back.connect(
+            lambda: self.stack.setCurrentWidget(self.results_page)
+        )
         self.pet_page.back_to_dashboard_clicked.connect(
             lambda: self.stack.setCurrentWidget(self.dashboard)
         )
@@ -174,16 +196,67 @@ class MainWindow(QMainWindow):
                 concern_title=self.concern_quiz_page.selected_concerns[0]
             )
         )
-        
-
 
         self.stack.addWidget(self.pet_page)
         self.stack.setCurrentWidget(self.pet_page)
+    
+    def closeEvent(self, event):
+
+        # 1) delete background question data
+        try:
+            if hasattr(self.background_page, "wipe_user_data"):
+                self.background_page.wipe_user_data()
+        except:
+            pass
+
+        # 2) delete quiz answers
+        try:
+            if hasattr(self.concern_quiz_page, "wipe_user_data"):
+                self.concern_quiz_page.wipe_user_data()
+        except:
+            pass
+
+        # 3) delete learn-more content data
+        try:
+            if hasattr(self.learn_more_page_widget, "wipe_user_data"):
+                self.learn_more_page_widget.wipe_user_data()
+        except:
+            pass
+
+        # 4) delete PET data
+        try:
+            if hasattr(self.pet_page, "wipe_user_data"):
+                self.pet_page.wipe_user_data()
+        except:
+            pass
+
+        # 5) delete PDF generation data
+        try:
+            if hasattr(self.download_pdf_page_widget, "wipe_user_data"):
+                self.download_pdf_page_widget.wipe_user_data()
+        except:
+            pass
+
+        # Close DB securely
+        try:
+            if hasattr(self, "conn"):
+                self.conn.close()
+        except:
+            pass
+
+        event.accept()
+
+
+
+
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
     apply_stylesheet(app, theme="light_blue.xml")
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+

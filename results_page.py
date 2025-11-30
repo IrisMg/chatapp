@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
 from PyQt6.QtCore import Qt, pyqtSignal
+from dashboard import HeaderWidget
 
 class ResultPage(QWidget):
     # Signals for navigation
@@ -7,6 +8,9 @@ class ResultPage(QWidget):
     learn_more_clicked = pyqtSignal()
     back_to_dashboard_clicked = pyqtSignal()
     view_pet_clicked = pyqtSignal()
+    header_dashboard_clicked = pyqtSignal()
+    download_pdf_clicked = pyqtSignal()
+
 
     def __init__(self, score, max_score, parent=None):
         super().__init__(parent)
@@ -18,6 +22,9 @@ class ResultPage(QWidget):
         layout = QVBoxLayout()
         layout.setSpacing(25)
         layout.setContentsMargins(40, 40, 40, 40)
+        # --- Header ---
+        self.header = HeaderWidget()
+        layout.addWidget(self.header)
 
         # --- Title above the circle ---
         title = QLabel("🎉 Quiz Completed!")
@@ -62,7 +69,7 @@ class ResultPage(QWidget):
         button_layout = QHBoxLayout()
         button_layout.setSpacing(20)
 
-        self.show_answers_btn = QPushButton("Show Answers")
+        self.show_answers_btn = QPushButton("👍 Show Answers")
         self.show_answers_btn.setStyleSheet("""
             QPushButton {
                 background-color: #81C784;
@@ -79,7 +86,7 @@ class ResultPage(QWidget):
 
         button_layout.addWidget(self.show_answers_btn)
 
-        self.learn_more_btn = QPushButton("Learn More")
+        self.learn_more_btn = QPushButton("📚 Learn More")
         self.learn_more_btn.setStyleSheet("""
             QPushButton {
                 background-color: #64B5F6;
@@ -98,7 +105,7 @@ class ResultPage(QWidget):
         layout.addLayout(button_layout)
 
         # --- PET Recommendation button ---
-        self.view_pet_btn = QPushButton("🔒 View PET Recommendations")
+        self.view_pet_btn = QPushButton("🔒 View Privacy Eenchnacing Tools")
         self.view_pet_btn.setStyleSheet("""
             QPushButton {
                 background-color: #FFB74D;
@@ -116,24 +123,42 @@ class ResultPage(QWidget):
 
         layout.addLayout(button_layout)
 
+        # Download PDF
+        download_pdf_btn = QPushButton("📄 Download PDF")
+        download_pdf_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #6a0dad;  /* Purple */
+                color: white;
+                border-radius: 5px;
+                padding: 5px 10px;
+            }
+            QPushButton:hover {
+                background-color: #5b0ca1;  /* Darker purple on hover */
+            }
+        """)
+        download_pdf_btn.clicked.connect(lambda: self.download_pdf_clicked.emit())
+        button_layout.addWidget(download_pdf_btn)
+
         # --- Back to dashboard ---
         self.finish_button = QPushButton("🏠 Back to Dashboard")
         self.finish_button.setStyleSheet("""
             QPushButton {
-                background-color: #B0BEC5;
+                background-color: #00BFA5;
                 color: white;
                 border-radius: 8px;
-                padding: 8px 20px;
+                padding: 10px 20px;
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #90A4AE;
+                background-color: #009E88;
             }
         """)
         self.finish_button.clicked.connect(self.back_to_dashboard_clicked.emit)
         layout.addWidget(self.finish_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(layout)
+
+        
 
         
 
